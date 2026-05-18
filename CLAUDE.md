@@ -41,7 +41,7 @@ Each scraper is self-contained and writes its own output CSV. All CSVs share the
 
 **EMVA** — static HTML. Two-step: (1) parse member list page for profile URLs, (2) visit each profile to extract address + website. ~200 members, 1 req/sec.
 
-**VDMA** — server-rendered HTML. Single-step: loop over A–Z letter pages, extract all contact fields directly from list view. ~3,500 members, 1.5 sec/page.
+**VDMA** — uses an internal Liferay portlet JSON API (`p_p_resource_id=getPage`, 10 members per page, 355 pages). Returns structured JSON with all contact fields pre-parsed — no HTML parsing needed. ~3,550 members, 1 sec/page.
 
 **SPS** — JavaScript-rendered. Uses Playwright (headless Chromium) to scroll and render the exhibitor search page. Selectors may need updating after each show year.
 
