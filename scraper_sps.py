@@ -97,7 +97,7 @@ def run() -> None:
             print(f"  ERROR page {page}: {e}", file=sys.stderr)
         time.sleep(DELAY)
 
-    with OUTPUT.open("w", newline="", encoding="utf-8") as f:
+    with OUTPUT.open("w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
         writer.writeheader()
         writer.writerows(rows)
