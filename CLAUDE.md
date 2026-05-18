@@ -14,19 +14,13 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-For SPS/VISION scrapers (JavaScript-rendered sites), also install Playwright:
-```
-pip install playwright
-playwright install chromium
-```
-
 ## Scrapers
 
 | Script | Source | Tech | Output |
 |---|---|---|---|
 | `scraper_emva.py` | EMVA member directory | requests + BS4 | `leads_emva.csv` |
-| `scraper_vdma.py` | VDMA member directory | requests + BS4 | `leads_vdma.csv` |
-| `scraper_sps.py` | SPS Nuremberg exhibitors | Playwright | `leads_sps.csv` |
+| `scraper_vdma.py` | VDMA member directory | requests + JSON API | `leads_vdma.csv` |
+| `scraper_sps.py` | SPS Nuremberg exhibitors | requests + JSON API | `leads_sps.csv` |
 
 Run any scraper directly:
 ```
@@ -39,10 +33,10 @@ python scraper_sps.py
 
 Each scraper is self-contained and writes its own output CSV. All CSVs share the same column schema: `company, street, zip, city, country, phone, website, source`.
 
-**EMVA** — static HTML. Two-step: (1) parse member list page for profile URLs, (2) visit each profile to extract address + website. ~200 members, 1 req/sec.
+**EMVA** — static HTML. Two-step: (1) parse member list page for profile URLs, (2) visit each profile to extract address + website from `div.column_content`. ~154 members, 1 req/sec.
 
 **VDMA** — uses an internal Liferay portlet JSON API (`p_p_resource_id=getPage`, 10 members per page, 355 pages). Returns structured JSON with all contact fields pre-parsed — no HTML parsing needed. ~3,550 members, 1 sec/page.
 
-**SPS** — JavaScript-rendered. Uses Playwright (headless Chromium) to scroll and render the exhibitor search page. Selectors may need updating after each show year.
+**SPS** — uses the Messe Frankfurt exhibitor-service JSON API discovered in `app.min.js`. Endpoint: `api.messefrankfurt.com/service/esb_api/exhibitor-service/api/2.1/public/exhibitor/search`. Requires `Apikey` header and `findEventVariable=SPS` parameter. Returns up to 100 per page. ~619 exhibitors. No Playwright needed.
 
-**VISION Stuttgart** — also JavaScript-rendered, same approach as SPS (not yet implemented).
+**VISION Stuttgart** — not yet implemented. Same Messe Frankfurt platform as SPS; likely uses the same API with a different `findEventVariable`.
